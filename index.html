@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Edgar Martinez — Software Engineer</title>
+<meta name="description" content="Edgar Martinez is a full stack software engineer in Toronto with 10+ years across Rails, TypeScript, React, Next.js and React Native.">
+<meta property="og:title" content="Edgar Martinez — Software Engineer">
+<meta property="og:description" content="Full stack engineer in Toronto. Rails, TypeScript, React, Next.js, React Native.">
+<meta property="og:url" content="https://edmrt.com">
+<link rel="canonical" href="https://edmrt.com">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23141414'/><text x='16' y='22' font-family='Georgia,serif' font-size='17' fill='%23f4efe6' text-anchor='middle'>em</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7f4ee;
+    --ink: #161513;
+    --muted: #6b665d;
+    --line: #e2ddd2;
+    --card: #fffdf9;
+    --accent: #c2410c;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #121110;
+      --ink: #efebe3;
+      --muted: #9a948a;
+      --line: #2a2825;
+      --card: #1a1917;
+      --accent: #f07a3e;
+      color-scheme: dark;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.6 Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding-inline: 20px; }
+  a { color: inherit; text-decoration-color: var(--line); text-underline-offset: 3px; }
+  a:hover { color: var(--accent); text-decoration-color: currentColor; }
+
+  nav {
+    display: flex; justify-content: space-between; align-items: center;
+    padding-block: 28px;
+  }
+  .mark { font: 600 20px/1 Fraunces, Georgia, serif; text-decoration: none; letter-spacing: -0.02em; }
+  nav ul { display: flex; gap: 22px; list-style: none; margin: 0; padding: 0; font-size: 14px; }
+  nav ul a { text-decoration: none; color: var(--muted); }
+
+  header { padding-block: 72px 56px; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 13px; color: var(--muted); margin-bottom: 20px;
+  }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: #22a55b; box-shadow: 0 0 0 4px color-mix(in srgb, #22a55b 20%, transparent); }
+  h1 {
+    font: 400 clamp(40px, 7vw, 64px)/1.05 Fraunces, Georgia, serif;
+    letter-spacing: -0.03em; margin: 0 0 24px;
+  }
+  h1 em { font-style: italic; color: var(--accent); }
+  .lede { font-size: 19px; color: var(--muted); max-width: 580px; margin: 0 0 32px; }
+  .links { display: flex; flex-wrap: wrap; gap: 12px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 18px; border-radius: 999px; font-size: 14px; font-weight: 500;
+    text-decoration: none; border: 1px solid var(--line); background: var(--card);
+  }
+  .btn.primary { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .btn.primary:hover { color: var(--bg); opacity: .88; }
+
+  section { padding-block: 48px; border-top: 1px solid var(--line); }
+  h2 {
+    font: 500 13px/1 Inter, sans-serif; text-transform: uppercase; letter-spacing: .12em;
+    color: var(--muted); margin: 0 0 28px;
+  }
+
+  .job { display: grid; grid-template-columns: 150px 1fr; gap: 8px 24px; padding-block: 16px; }
+  .job + .job { border-top: 1px dashed var(--line); }
+  .when { font-size: 14px; color: var(--muted); padding-top: 2px; }
+  .role { font-weight: 600; }
+  .org { color: var(--muted); }
+  .job p { margin: 6px 0 0; font-size: 15px; color: var(--muted); }
+
+  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .proj {
+    display: flex; flex-direction: column; gap: 8px;
+    padding: 22px; border: 1px solid var(--line); border-radius: 14px; background: var(--card);
+    text-decoration: none; transition: border-color .15s, transform .15s;
+  }
+  a.proj:hover { border-color: var(--accent); transform: translateY(-2px); color: inherit; }
+  .proj h3 { margin: 0; font: 600 20px/1.2 Fraunces, Georgia, serif; letter-spacing: -0.01em; }
+  .proj p { margin: 0; font-size: 15px; color: var(--muted); flex: 1; }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+  .tags span { font-size: 12px; padding: 3px 9px; border-radius: 999px; background: color-mix(in srgb, var(--ink) 6%, transparent); color: var(--muted); }
+  .arrow { color: var(--accent); }
+
+  .stack { display: flex; flex-wrap: wrap; gap: 10px; }
+  .stack span { padding: 8px 14px; border: 1px solid var(--line); border-radius: 10px; font-size: 14px; background: var(--card); }
+
+  footer { padding-block: 48px 64px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; }
+  .contact { font: 400 clamp(28px, 5vw, 40px)/1.15 Fraunces, Georgia, serif; color: var(--ink); margin: 0 0 20px; letter-spacing: -0.02em; }
+
+  @media (max-width: 600px) {
+    nav ul { gap: 16px; }
+    header { padding-block: 40px 40px; }
+    .job { grid-template-columns: 1fr; gap: 2px; }
+    .grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav>
+    <a class="mark" href="#">edmrt</a>
+    <ul>
+      <li><a href="#work">Work</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <header>
+    <div class="eyebrow"><span class="dot"></span>Toronto, Canada · Software Engineer @ Instacart</div>
+    <h1>Hi, I'm Edgar.<br>I build products <em>end to end.</em></h1>
+    <p class="lede">Full stack engineer with 10+ years across backend, front end and mobile — Ruby on Rails, TypeScript, React, Next.js and React Native — shipping projects from first idea to launch.</p>
+    <div class="links">
+      <a class="btn primary" href="https://www.linkedin.com/in/edmartinezdev" target="_blank" rel="noopener">LinkedIn ↗</a>
+      <a class="btn" href="https://github.com/edmrt" target="_blank" rel="noopener">GitHub ↗</a>
+    </div>
+  </header>
+
+  <section id="work">
+    <h2>Experience</h2>
+    <div class="job">
+      <div class="when">2025 — Now</div>
+      <div>
+        <div class="role">Software Engineer <span class="org">· Instacart</span></div>
+        <p>Internal tools that power promotions and discounts across 1,400+ retail partners and 80,000+ stores. React UIs, Rails APIs, feature flags and end-to-end testing.</p>
+      </div>
+    </div>
+    <div class="job">
+      <div class="when">2023 — 2024</div>
+      <div>
+        <div class="role">Senior Full Stack Developer <span class="org">· Maple Tech Ventures</span></div>
+        <p>Led SaaS development on the MERN stack, added AI-driven features with Rails and Next.js, and shipped React Native apps that lifted user engagement 30%.</p>
+      </div>
+    </div>
+    <div class="job">
+      <div class="when">2016 — 2023</div>
+      <div>
+        <div class="role">Senior Software Developer <span class="org">· Divine Digital Agency</span></div>
+        <p>Directed multi-platform builds with Node.js APIs and React Native apps, and owned QA and launches for client web and mobile products.</p>
+      </div>
+    </div>
+    <div class="job">
+      <div class="when">2014 — 2016</div>
+      <div>
+        <div class="role">Web Developer <span class="org">· United Franchise Group</span></div>
+        <p>Built multi-department systems and a custom CMS, plus franchise management tools on Rails and React.</p>
+      </div>
+    </div>
+    <div class="job">
+      <div class="when">2012 — 2014</div>
+      <div>
+        <div class="role">Junior Web Developer <span class="org">· La Prensa Gráfica</span></div>
+        <p>Interactive publishing and live broadcast platforms for El Salvador's national newspaper.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="projects">
+    <h2>Side projects</h2>
+    <div class="grid">
+      <a class="proj" href="https://github.com/edmrt/Life-app" target="_blank" rel="noopener">
+        <h3>Life app <span class="arrow">↗</span></h3>
+        <p>One app to organize your whole life, built as modules in a shared shell — starting with to-dos.</p>
+        <div class="tags"><span>React</span><span>TypeScript</span><span>Cloudflare D1</span></div>
+      </a>
+      <a class="proj" href="https://github.com/edmrt/weather-ai-web" target="_blank" rel="noopener">
+        <h3>Weather AI <span class="arrow">↗</span></h3>
+        <p>Weather for any city with automatic location detection and dynamic sky transitions. Also on mobile.</p>
+        <div class="tags"><span>Next.js</span><span>Expo</span><span>Tailwind</span></div>
+      </a>
+      <a class="proj" href="https://github.com/edmrt/f1calendar" target="_blank" rel="noopener">
+        <h3>F1 Calendar <span class="arrow">↗</span></h3>
+        <p>The Formula 1 race season at a glance.</p>
+        <div class="tags"><span>Next.js</span><span>shadcn/ui</span></div>
+      </a>
+      <a class="proj" href="https://github.com/edmrt/investment-portfolio" target="_blank" rel="noopener">
+        <h3>Investment Portfolio <span class="arrow">↗</span></h3>
+        <p>Pixel-faithful mobile portfolio UI in a single HTML file, with data refreshed automatically by GitHub Actions.</p>
+        <div class="tags"><span>HTML/CSS</span><span>GitHub Actions</span></div>
+      </a>
+      <div class="proj">
+        <h3>ChatGPT Easy</h3>
+        <p>A lightweight Ruby gem for sending prompts to OpenAI's ChatGPT API from any Ruby app.</p>
+        <div class="tags"><span>Ruby</span><span>OpenAI</span></div>
+      </div>
+      <div class="proj">
+        <h3>Muse EEG Visualizer</h3>
+        <p>Real-time, four-channel brainwave charts for the Muse headband.</p>
+        <div class="tags"><span>Next.js</span><span>Chart.js</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Toolkit</h2>
+    <div class="stack">
+      <span>Ruby on Rails</span><span>TypeScript</span><span>React</span><span>Next.js</span><span>React Native / Expo</span><span>Node.js</span><span>Go</span><span>Jest · RSpec</span><span>AI APIs</span>
+    </div>
+  </section>
+
+  <footer id="contact">
+    <p class="contact">Let's build something.</p>
+    <div class="links" style="margin-bottom:32px">
+      <a class="btn primary" href="https://www.linkedin.com/in/edmartinezdev" target="_blank" rel="noopener">Message me on LinkedIn ↗</a>
+      <a class="btn" href="https://github.com/edmrt" target="_blank" rel="noopener">github.com/edmrt ↗</a>
+    </div>
+    © <span id="y">2026</span> Edgar Martinez · edmrt.com
+  </footer>
+</div>
+<script>document.getElementById('y').textContent = new Date().getFullYear();</script>
+</body>
+</html>
