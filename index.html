@@ -89,18 +89,6 @@
   .org { color: var(--muted); }
   .job p { margin: 6px 0 0; font-size: 15px; color: var(--muted); }
 
-  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
-  .proj {
-    display: flex; flex-direction: column; gap: 8px;
-    padding: 22px; border: 1px solid var(--line); border-radius: 14px; background: var(--card);
-    text-decoration: none; transition: border-color .15s, transform .15s;
-  }
-  a.proj:hover { border-color: var(--accent); transform: translateY(-2px); color: inherit; }
-  .proj h3 { margin: 0; font: 600 20px/1.2 Fraunces, Georgia, serif; letter-spacing: -0.01em; }
-  .proj p { margin: 0; font-size: 15px; color: var(--muted); flex: 1; }
-  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
-  .tags span { font-size: 12px; padding: 3px 9px; border-radius: 999px; background: color-mix(in srgb, var(--ink) 6%, transparent); color: var(--muted); }
-  .arrow { color: var(--accent); }
 
   .stack { display: flex; flex-wrap: wrap; gap: 10px; }
   .stack span { padding: 8px 14px; border: 1px solid var(--line); border-radius: 10px; font-size: 14px; background: var(--card); }
@@ -112,7 +100,6 @@
     nav ul { gap: 16px; }
     header { padding-block: 40px 40px; }
     .job { grid-template-columns: 1fr; gap: 2px; }
-    .grid { grid-template-columns: 1fr; }
   }
 </style>
 </head>
