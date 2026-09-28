@@ -117,14 +117,23 @@
   .term-bar { display: flex; align-items: center; gap: 6px; padding: 10px 14px; border-bottom: 1px solid var(--term-line); }
   .term-bar b { width: 10px; height: 10px; border-radius: 50%; background: #2a2e3b; }
   .term-bar span { margin-left: 8px; font: 12px var(--mono); color: var(--term-muted); }
-  .term pre {
-    margin: 0; padding: 14px 18px; font: 13px/1.65 var(--mono); color: var(--term-muted);
-    overflow-x: auto; white-space: pre;
+  .term-body {
+    padding: 14px 18px; font: 13px/1.65 var(--mono); color: var(--term-muted);
+    height: 300px; overflow-y: auto; cursor: text; scrollbar-width: thin; scrollbar-color: #2a2e3b transparent;
+  }
+  .term-body pre { margin: 0; font: inherit; white-space: pre-wrap; word-break: break-word; }
+  .term-line { display: flex; align-items: baseline; gap: 8px; }
+  .term-line input {
+    flex: 1; min-width: 0; background: none; border: 0; outline: 0; padding: 0;
+    font: inherit; color: var(--term-ink); caret-color: #22d3ee;
   }
   .term .p { color: #22d3ee; }
   .term .k { color: #818cf8; }
   .term .s { color: #34d399; }
   .term .c { color: var(--term-ink); }
+  .term .e { color: #f87171; }
+  .term .y { color: #fbbf24; }
+  .term .hint { color: #5a5f6e; }
   .cursor { display: inline-block; width: 8px; height: 15px; background: #22d3ee; vertical-align: -2px; animation: blink 1s steps(1) infinite; }
   @keyframes blink { 50% { opacity: 0; } }
 
@@ -177,7 +186,8 @@
     nav ul { gap: 16px; }
     header { padding-block: 28px 16px; }
     .job { grid-template-columns: 1fr; gap: 2px; }
-    .term pre { font-size: 12px; }
+    .term-body { font-size: 12px; height: 280px; }
+    .term-line input { font-size: 16px; }
   }
   @media (prefers-reduced-motion: reduce) { .pulse, .cursor { animation: none; } }
 </style>
@@ -222,16 +232,19 @@
       <a class="btn" href="https://github.com/edmrt" target="_blank" rel="noopener">GitHub ↗</a>
     </div>
 
-    <div class="term" aria-label="Profile summary">
+    <div class="term">
       <div class="term-bar"><b></b><b></b><b></b><span>~/edmrt — zsh</span></div>
-<pre><span class="p">➜</span> <span class="c">whoami</span>
+      <div class="term-body" id="term">
+        <div id="term-out"><pre><span class="p">➜</span> <span class="c">whoami</span>
 <span class="k">name</span>     Edgar Martinez
 <span class="k">role</span>     Software Engineer @ Instacart
 <span class="k">focus</span>    full stack · mobile · AI integrations
 <span class="k">agents</span>   claude code, codex, opencode
 <span class="k">stack</span>    rails, typescript, react, next.js, react native, go
 <span class="k">status</span>   <span class="s">● open to new opportunities</span>
-<span class="p">➜</span> <span class="cursor"></span></pre>
+<span class="hint">it's a real terminal, type 'help' and press enter</span></pre></div>
+        <label class="term-line"><span class="p" id="term-ps">➜ ~</span><input id="term-in" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Terminal input"></label>
+      </div>
     </div>
   </header>
 
@@ -325,6 +338,148 @@
     © <span id="y">2026</span> Edgar Martinez · edmrt.com
   </footer>
 </div>
-<script>document.getElementById('y').textContent = new Date().getFullYear();</script>
+<script>
+document.getElementById('y').textContent = new Date().getFullYear();
+
+(() => {
+  const body = document.getElementById('term');
+  const out = document.getElementById('term-out');
+  const input = document.getElementById('term-in');
+  const ps = document.getElementById('term-ps');
+  const esc = t => t.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const k = t => `<span class="k">${t}</span>`, s = t => `<span class="s">${t}</span>`,
+        y = t => `<span class="y">${t}</span>`, e = t => `<span class="e">${t}</span>`,
+        c = t => `<span class="c">${t}</span>`, h = t => `<span class="hint">${t}</span>`;
+
+  const files = {
+    'about.md': () =>
+`${c('# Edgar Martinez')}
+Full stack engineer, 10+ years across backend, front end and mobile.
+Based in Toronto. Currently building internal promotion tools at Instacart.
+I ship products end to end and wire AI models into real-world features.`,
+    'experience.md': () => cmd.git(['log']),
+    'stack.md': () =>
+`${k('languages')}   ruby, typescript, javascript, go
+${k('backend')}     rails, node.js
+${k('frontend')}    react, next.js, tailwind
+${k('mobile')}      react native, expo
+${k('testing')}     jest, rspec, react testing library`,
+    'ai.md': () =>
+`${k('agents')}      claude code, codex, opencode
+${k('harness')}     CLAUDE.md / AGENTS.md, MCP servers, hooks, skills, subagents
+${k('llm apis')}    openai, hugging face
+${k('automation')}  scheduled github actions`,
+    'contact.md': () =>
+`${k('linkedin')}    <a href="https://www.linkedin.com/in/edmartinezdev" target="_blank" rel="noopener">linkedin.com/in/edmartinezdev</a>
+${k('github')}      <a href="https://github.com/edmrt" target="_blank" rel="noopener">github.com/edmrt</a>
+${k('web')}         edmrt.com`,
+  };
+  const dirs = { experience: 'work', ai: 'ai', stack: 'stack', contact: 'contact' };
+  let cwd = '~';
+  const hist = []; let hi = 0;
+
+  const cmd = {
+    help: () =>
+`${c('available commands')}
+  ${s('help')}              show this list
+  ${s('whoami')}            who is this guy?
+  ${s('ls')}                list files
+  ${s('cat')} ${h('&lt;file&gt;')}        read a file, e.g. cat about.md
+  ${s('cd')} ${h('&lt;dir&gt;')}          jump to a section, e.g. cd experience
+  ${s('pwd')}               print working directory
+  ${s('git log')}           career history, as commits
+  ${s('echo')} ${h('&lt;text&gt;')}       say something
+  ${s('history')}           commands you've run
+  ${s('clear')}             clear the screen
+${h('tip: tab autocompletes, ↑/↓ recall commands')}`,
+    whoami: () =>
+`${k('name')}     Edgar Martinez
+${k('role')}     Software Engineer @ Instacart
+${k('focus')}    full stack · mobile · AI integrations
+${k('agents')}   claude code, codex, opencode`,
+    ls: a => {
+      if (a[0] && a[0] !== '-la' && a[0] !== '-l' && a[0] !== '~' && a[0] !== '.') return e(`ls: ${esc(a[0])}: No such file or directory`);
+      return Object.keys(dirs).map(d => `<span class="k">${d}/</span>`).join('  ') + '  ' + Object.keys(files).join('  ');
+    },
+    cat: a => {
+      if (!a[0]) return e('cat: missing file operand') + '\n' + h('try: cat about.md');
+      const f = files[a[0]];
+      if (f) return f();
+      if (dirs[a[0].replace(/\/$/, '')]) return e(`cat: ${esc(a[0])}: Is a directory`);
+      return e(`cat: ${esc(a[0])}: No such file or directory`);
+    },
+    cd: a => {
+      const d = (a[0] || '~').replace(/\/$/, '');
+      if (d === '~' || d === '..' || d === '/') { cwd = '~'; window.scrollTo({ top: 0, behavior: 'smooth' }); return ''; }
+      if (!dirs[d]) return e(`cd: no such file or directory: ${esc(d)}`);
+      cwd = '~/' + d;
+      document.getElementById(dirs[d])?.scrollIntoView({ behavior: 'smooth' });
+      return h(`→ scrolled to ${d}`);
+    },
+    pwd: () => '/home/edgar' + cwd.slice(1),
+    echo: a => esc(a.join(' ')),
+    history: () => hist.map((x, i) => `${String(i + 1).padStart(4)}  ${esc(x)}`).join('\n'),
+    git: a => {
+      if (a[0] !== 'log') return a[0] === 'status'
+        ? `On branch ${s('main')}\nYour career is up to date with 'origin/main'.\nnothing to commit, working tree clean`
+        : e(`git: '${esc(a[0] || '')}' is not a git command in this demo.`) + ' ' + h("try 'git log'");
+      const commits = [
+        ['a1f9c02', 'HEAD -> main', '2025', 'feat: Software Engineer @ Instacart', 'promotions tooling for 1,400+ retailers'],
+        ['7c3e4b8', '', '2023', 'feat: Senior Full Stack Developer @ Maple Tech Ventures', 'SaaS + AI features, React Native apps (+30% engagement)'],
+        ['e52d1a9', '', '2016', 'feat: Senior Software Developer @ Divine Digital Agency', 'multi-platform web and mobile builds'],
+        ['3b8f6d1', '', '2014', 'feat: Web Developer @ United Franchise Group', 'custom CMS and franchise tools'],
+        ['0d4c2e7', '', '2012', 'init: Junior Web Developer @ La Prensa Gráfica', 'newsroom publishing platforms'],
+      ];
+      return commits.map(([sha, ref, yr, msg, body]) =>
+        `${y('commit ' + sha)}${ref ? ' (' + `<span class="p">${ref}</span>` + ')' : ''}\nDate:   ${yr}\n\n    ${c(msg)}\n    ${body}`).join('\n\n');
+    },
+    clear: () => { out.innerHTML = ''; return null; },
+    // hidden extras
+    sudo: () => e('edgar is not in the sudoers file. This incident will be reported. 🚨'),
+    rm: a => a.join(' ').includes('-rf') ? e('nice try. 🙂') : e('rm: permission denied'),
+    exit: () => h("there's no escape. try 'cat contact.md' instead 😄"),
+    vim: () => h("you'll never leave. staying in the terminal for your safety."),
+    claude: () => s('✻ Claude Code') + ' — ' + 'the agent that helped build this site.',
+    date: () => new Date().toString(),
+    open: a => {
+      const u = { linkedin: 'https://www.linkedin.com/in/edmartinezdev', github: 'https://github.com/edmrt' }[a[0]];
+      if (!u) return h('usage: open linkedin | open github');
+      window.open(u, '_blank', 'noopener'); return h(`opening ${a[0]}…`);
+    },
+  };
+
+  function print(html) {
+    if (html === null || html === undefined) return;
+    const p = document.createElement('pre'); p.innerHTML = html; out.appendChild(p);
+  }
+  function run(line) {
+    const raw = line.trim();
+    print(`<span class="p">➜ ${cwd}</span> ${c(esc(line))}`);
+    if (!raw) return;
+    hist.push(raw); hi = hist.length;
+    const [name, ...args] = raw.split(/\s+/);
+    const fn = cmd[name.toLowerCase()];
+    print(fn ? fn(args) : e(`zsh: command not found: ${esc(name)}`) + '\n' + h("type 'help' to see what's available"));
+    ps.textContent = '➜ ' + cwd;
+  }
+
+  input.addEventListener('keydown', ev => {
+    if (ev.key === 'Enter') { run(input.value); input.value = ''; body.scrollTop = body.scrollHeight; }
+    else if (ev.key === 'ArrowUp') { if (hi > 0) input.value = hist[--hi]; ev.preventDefault(); }
+    else if (ev.key === 'ArrowDown') { hi = Math.min(hist.length, hi + 1); input.value = hist[hi] || ''; ev.preventDefault(); }
+    else if (ev.key === 'Tab') {
+      ev.preventDefault();
+      const parts = input.value.split(' ');
+      const last = parts[parts.length - 1];
+      const pool = parts.length === 1 ? Object.keys(cmd).slice(0, 10) : [...Object.keys(files), ...Object.keys(dirs), 'log'];
+      const m = pool.filter(x => x.startsWith(last));
+      if (m.length === 1) { parts[parts.length - 1] = m[0]; input.value = parts.join(' ') + (parts.length === 1 ? ' ' : ''); }
+      else if (m.length > 1) { print(`<span class="p">➜ ${cwd}</span> ${c(esc(input.value))}\n${m.join('  ')}`); body.scrollTop = body.scrollHeight; }
+    }
+    else if (ev.key === 'l' && ev.ctrlKey) { ev.preventDefault(); out.innerHTML = ''; }
+  });
+  body.addEventListener('click', () => { if (!window.getSelection().toString()) input.focus({ preventScroll: true }); });
+})();
+</script>
 </body>
 </html>
